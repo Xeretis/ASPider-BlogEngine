@@ -5,9 +5,9 @@ using Persistence.Contexts;
 
 namespace Persistence.Repositories;
 
-public class BlogRepository : GenericRepository<Blog>, IBlogRepository
+public class PageRepository : GenericRepository<Page>, IPageRepository
 {
-    public BlogRepository(ApplicationDbContext context) : base(context)
+    public PageRepository(ApplicationDbContext context) : base(context)
     {
     }
 }

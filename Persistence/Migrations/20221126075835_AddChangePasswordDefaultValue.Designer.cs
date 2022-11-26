@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence.Contexts;
@@ -11,9 +12,11 @@ using Persistence.Contexts;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221126075835_AddChangePasswordDefaultValue")]
+    partial class AddChangePasswordDefaultValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,6 +159,7 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatorId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
@@ -187,18 +191,6 @@ namespace Persistence.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Pages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Content = "Index content, only shown on the page itself",
-                            CreatedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
-                            Description = "Index description",
-                            ModifiedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
-                            Title = "Index",
-                            Visible = true
-                        });
                 });
 
             modelBuilder.Entity("Domain.Data.Entities.Post", b =>
@@ -405,7 +397,9 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Data.Entities.ApiUser", "Creator")
                         .WithMany("Pages")
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Data.Entities.Page", "Parent")
                         .WithMany("Children")

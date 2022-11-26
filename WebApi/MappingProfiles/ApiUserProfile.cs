@@ -1,13 +1,14 @@
 using AutoMapper;
 using Domain.Data.Entities;
-using Domain.Data.Models.Auth;
+using WebApi.Models.Auth;
 
-namespace Application.MappingProfiles;
+namespace WebApi.MappingProfiles;
 
 public class ApiUserProfile : Profile
 {
     public ApiUserProfile()
     {
         CreateMap<ApiUser, LoginResponseUserModel>();
+        CreateMap<ApiUser, UserResponseModel>();
     }
 }

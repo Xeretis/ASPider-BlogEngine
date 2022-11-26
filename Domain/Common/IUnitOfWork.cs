@@ -4,8 +4,8 @@ namespace Domain.Common;
 
 public interface IUnitOfWork : IDisposable
 {
-    IBlogRepository Blogs { get; }
-    
+    IPostRepository Posts { get; }
+
     int Complete();
     Task<int> CompleteAsync();
 }

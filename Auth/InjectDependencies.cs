@@ -1,4 +1,6 @@
 using System.Text;
+using Auth.Services.Implementations;
+using Auth.Services.Types;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -22,19 +24,24 @@ public static class InjectDependencies
         {
             options.SaveToken = true;
             options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters()
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = false,
                 ValidIssuer = configuration["JWT:ValidIssuer"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
             };
-        });;
+        });
+        ;
         var core = services.AddIdentityCore<ApiUser>(options => options.User.RequireUniqueEmail = true);
 
         var builder = new IdentityBuilder(core.UserType, typeof(IdentityRole), services);
-        builder.AddEntityFrameworkStores<ApplicationDbContext>().AddRoles<IdentityRole>().AddDefaultTokenProviders();
-        
+        builder.AddEntityFrameworkStores<ApplicationDbContext>().AddRoles<IdentityRole>()
+            .AddSignInManager<SignInManager<ApiUser>>()
+            .AddDefaultTokenProviders();
+
+        services.AddScoped<IAuthService, AuthService>();
+
         return services;
     }
 }
