@@ -9,6 +9,7 @@ public static class InjectDependencies
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddSingleton<IFileService, FileService>();
+        services.AddScoped<IUsersService, UsersService>();
 
         return services;
     }

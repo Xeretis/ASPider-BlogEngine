@@ -17,14 +17,14 @@ public static class SeedDatabase
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
         // --- Seed Roles ---
-        if (!await roleManager.RoleExistsAsync(ApiUserRole.Editor))
-            await roleManager.CreateAsync(new IdentityRole(ApiUserRole.Editor));
+        if (!await roleManager.RoleExistsAsync(ApiRoles.Editor))
+            await roleManager.CreateAsync(new IdentityRole(ApiRoles.Editor));
 
-        if (!await roleManager.RoleExistsAsync(ApiUserRole.Moderator))
-            await roleManager.CreateAsync(new IdentityRole(ApiUserRole.Moderator));
+        if (!await roleManager.RoleExistsAsync(ApiRoles.Moderator))
+            await roleManager.CreateAsync(new IdentityRole(ApiRoles.Moderator));
 
-        if (!await roleManager.RoleExistsAsync(ApiUserRole.Webmaster))
-            await roleManager.CreateAsync(new IdentityRole(ApiUserRole.Webmaster));
+        if (!await roleManager.RoleExistsAsync(ApiRoles.Webmaster))
+            await roleManager.CreateAsync(new IdentityRole(ApiRoles.Webmaster));
 
         // --- Seed Users ---
         var user = new ApiUser
@@ -52,7 +52,7 @@ public static class SeedDatabase
             await userStore.CreateAsync(user);
 
             var createdUser = await userManager.FindByNameAsync(user.UserName);
-            await userManager.AddToRoleAsync(createdUser, ApiUserRole.Webmaster);
+            await userManager.AddToRoleAsync(createdUser, ApiRoles.Webmaster);
         }
 
         var ghostUser = new ApiUser

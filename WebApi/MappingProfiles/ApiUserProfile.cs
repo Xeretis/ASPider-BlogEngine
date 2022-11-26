@@ -1,6 +1,7 @@
 using AutoMapper;
 using Domain.Data.Entities;
 using WebApi.Models.Auth;
+using WebApi.Models.Users;
 
 namespace WebApi.MappingProfiles;
 
@@ -10,5 +11,6 @@ public class ApiUserProfile : Profile
     {
         CreateMap<ApiUser, LoginResponseUserModel>();
         CreateMap<ApiUser, UserResponseModel>();
+        CreateMap<ApiUser, UsersIndexResponseModel>();
     }
 }

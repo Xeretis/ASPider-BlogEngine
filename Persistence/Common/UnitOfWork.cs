@@ -19,7 +19,6 @@ public class UnitOfWork : IUnitOfWork
 
     public IPageRepository Pages { get; }
     public IFileUploadRepository FileUploads { get; }
-
     public IPostRepository Posts { get; }
 
     public int Complete()

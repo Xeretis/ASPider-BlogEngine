@@ -11,6 +11,7 @@ public class AllowedExtensionsAttribute : ValidationAttribute
         _extensions = extensions;
     }
 
+    //Not the safest way to do this but will do
     protected override ValidationResult IsValid(
         object value, ValidationContext validationContext)
     {
