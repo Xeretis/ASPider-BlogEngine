@@ -1,11 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Auth.Authorization.Attributes;
 using Auth.Services.Types;
 using AutoMapper;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using WebApi.Models.Auth;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -17,17 +19,19 @@ namespace WebApi.Controllers;
 public class AuthController : Controller
 {
     private readonly IAuthService _authService;
+    private readonly IMemoryCache _cache;
     private readonly IMapper _mapper;
     private readonly SignInManager<ApiUser> _signInManager;
     private readonly UserManager<ApiUser> _userManager;
 
     public AuthController(UserManager<ApiUser> userManager,
-        SignInManager<ApiUser> signInManager, IAuthService authService, IMapper mapper)
+        SignInManager<ApiUser> signInManager, IAuthService authService, IMapper mapper, IMemoryCache cache)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _mapper = mapper;
+        _cache = cache;
     }
 
     [HttpPost("Login")]
@@ -69,7 +73,7 @@ public class AuthController : Controller
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             ExpiresAt = token.ValidTo,
             User = _mapper.Map<LoginResponseUserModel>(user),
-            Roles = authClaims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList()
+            Roles = authClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
         });
     }
 
@@ -87,5 +91,33 @@ public class AuthController : Controller
     {
         var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
         return Ok(roles);
+    }
+
+    [Authorize]
+    [PasswordChange(false)]
+    [HttpPost("ChangePassword")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
+    {
+        var user = await _userManager.FindByNameAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+        if (result.Errors.Any())
+            return BadRequest(result.Errors);
+
+        user.ChangePassword = false;
+        await _userManager.UpdateAsync(user);
+
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(
+                DateTimeOffset.FromUnixTimeSeconds(int.Parse(HttpContext.User.FindFirstValue("exp"))));
+
+        _cache.Set($"PasswordChange{user.UserName}", false, cacheEntryOptions);
+
+        return NoContent();
     }
 }

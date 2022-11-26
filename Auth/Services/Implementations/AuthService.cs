@@ -24,9 +24,11 @@ public class AuthService : IAuthService
     {
         var authClaims = new List<Claim>
         {
+            new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.UserName),
             new(ClaimTypes.NameIdentifier, user.UserName),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
         };
 
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -38,16 +40,24 @@ public class AuthService : IAuthService
 
     public JwtSecurityToken GetAuthToken(List<Claim> authClaims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]!));
-
         var token = new JwtSecurityToken(
             _configuration["JWT:ValidIssuer"],
             null,
             expires: DateTime.Now.AddHours(3),
             claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            signingCredentials: CreateSigningCredentials()
         );
 
         return token;
+    }
+
+    private SigningCredentials CreateSigningCredentials()
+    {
+        return new SigningCredentials(
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!)
+            ),
+            SecurityAlgorithms.HmacSha256
+        );
     }
 }

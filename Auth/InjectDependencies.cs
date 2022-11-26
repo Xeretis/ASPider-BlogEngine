@@ -1,8 +1,11 @@
 using System.Text;
+using Auth.Authorization.Policies;
+using Auth.Authorization.Requirements;
 using Auth.Services.Implementations;
 using Auth.Services.Types;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,8 +35,17 @@ public static class InjectDependencies
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
             };
         });
-        ;
-        var core = services.AddIdentityCore<ApiUser>(options => options.User.RequireUniqueEmail = true);
+
+        var core = services.AddIdentityCore<ApiUser>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+            options.SignIn.RequireConfirmedAccount = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+        });
 
         var builder = new IdentityBuilder(core.UserType, typeof(IdentityRole), services);
         builder.AddEntityFrameworkStores<ApplicationDbContext>().AddRoles<IdentityRole>()
@@ -41,6 +53,9 @@ public static class InjectDependencies
             .AddDefaultTokenProviders();
 
         services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<IAuthorizationHandler, PasswordChangeRequirementHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PasswordChangePolicyProvider>();
 
         return services;
     }
