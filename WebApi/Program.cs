@@ -1,4 +1,6 @@
+using Application;
 using Auth;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Persistence;
 
@@ -42,6 +44,7 @@ builder.Services.AddSwaggerGen(option =>
 
 builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
@@ -53,6 +56,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+    RequestPath = new PathString("/Resources")
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -25,7 +25,7 @@ public class PasswordChangeRequirementHandler : AuthorizationHandler<PasswordCha
 
         if (changePassword == null)
         {
-            var user = await _userManager.FindByNameAsync(context.User.FindFirstValue(ClaimTypes.Name));
+            var user = await _userManager.FindByNameAsync(context.User.FindFirstValue(ClaimTypes.NameIdentifier));
             changePassword = user.ChangePassword;
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()

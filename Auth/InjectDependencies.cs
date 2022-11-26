@@ -1,4 +1,5 @@
 using System.Text;
+using Auth.Authorization;
 using Auth.Authorization.Policies;
 using Auth.Authorization.Requirements;
 using Auth.Services.Implementations;
@@ -6,6 +7,7 @@ using Auth.Services.Types;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +56,10 @@ public static class InjectDependencies
 
         services.AddScoped<IAuthService, AuthService>();
 
-        services.AddScoped<IAuthorizationHandler, PasswordChangeRequirementHandler>();
+        services.AddTransient<IPolicyEvaluator, ChallengeUnauthenticatedPolicyEvaluator>();
+        services.AddTransient<PolicyEvaluator>();
+
+        services.AddTransient<IAuthorizationHandler, PasswordChangeRequirementHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PasswordChangePolicyProvider>();
 
         return services;
