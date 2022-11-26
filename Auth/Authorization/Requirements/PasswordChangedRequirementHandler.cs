@@ -6,19 +6,19 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Auth.Authorization.Requirements;
 
-public class PasswordChangeRequirementHandler : AuthorizationHandler<PasswordChangeRequirement>
+public class PasswordChangedRequirementHandler : AuthorizationHandler<PasswordChangedRequirement>
 {
     private readonly IMemoryCache _cache;
     private readonly UserManager<ApiUser> _userManager;
 
-    public PasswordChangeRequirementHandler(UserManager<ApiUser> userManager, IMemoryCache cache)
+    public PasswordChangedRequirementHandler(UserManager<ApiUser> userManager, IMemoryCache cache)
     {
         _userManager = userManager;
         _cache = cache;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
-        PasswordChangeRequirement requirement)
+        PasswordChangedRequirement requirement)
     {
         _cache.TryGetValue($"PasswordChange{context.User.FindFirstValue(ClaimTypes.NameIdentifier)}",
             out bool? changePassword);

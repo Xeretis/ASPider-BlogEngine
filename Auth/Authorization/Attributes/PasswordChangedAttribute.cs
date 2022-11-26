@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Auth.Authorization.Attributes;
 
-public class PasswordChangeAttribute : AuthorizeAttribute
+public class PasswordChangedAttribute : AuthorizeAttribute
 {
     private const string POLICY_PREFIX = "PasswordChange";
 
-    public PasswordChangeAttribute(bool isPasswordChangeRequired)
+    public PasswordChangedAttribute(bool isPasswordChangeRequired)
     {
         IsPasswordChangeRequired = isPasswordChangeRequired;
     }

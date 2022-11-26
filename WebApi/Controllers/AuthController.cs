@@ -94,7 +94,7 @@ public class AuthController : Controller
     }
 
     [Authorize]
-    [PasswordChange(false)]
+    [PasswordChanged(false)]
     [HttpPost("ChangePassword")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

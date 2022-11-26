@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Auth.Authorization.Policies;
 
-public class PasswordChangePolicyProvider : IAuthorizationPolicyProvider
+public class PasswordChangedPolicyProvider : IAuthorizationPolicyProvider
 {
     private const string POLICY_PREFIX = "PasswordChange";
 
@@ -14,7 +14,7 @@ public class PasswordChangePolicyProvider : IAuthorizationPolicyProvider
             bool.TryParse(policyName.AsSpan(POLICY_PREFIX.Length), out var isPasswordChangeRequired))
         {
             var policy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-            policy.AddRequirements(new PasswordChangeRequirement(isPasswordChangeRequired));
+            policy.AddRequirements(new PasswordChangedRequirement(isPasswordChangeRequired));
             return Task.FromResult((AuthorizationPolicy?)policy.Build());
         }
 

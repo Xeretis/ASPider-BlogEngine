@@ -59,8 +59,8 @@ public static class InjectDependencies
         services.AddTransient<IPolicyEvaluator, ChallengeUnauthenticatedPolicyEvaluator>();
         services.AddTransient<PolicyEvaluator>();
 
-        services.AddTransient<IAuthorizationHandler, PasswordChangeRequirementHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PasswordChangePolicyProvider>();
+        services.AddTransient<IAuthorizationHandler, PasswordChangedRequirementHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PasswordChangedPolicyProvider>();
 
         return services;
     }

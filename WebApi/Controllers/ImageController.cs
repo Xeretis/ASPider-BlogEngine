@@ -7,7 +7,7 @@ using WebApi.Models.Image;
 namespace WebApi.Controllers;
 
 [Authorize]
-[PasswordChange(true)]
+[PasswordChanged(true)]
 [ApiController]
 [Route("[controller]")]
 [Produces("application/json")]

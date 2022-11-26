@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Auth.Authorization.Requirements;
 
-public class PasswordChangeRequirement : IAuthorizationRequirement
+public class PasswordChangedRequirement : IAuthorizationRequirement
 {
-    public PasswordChangeRequirement(bool isPasswordChangeRequired = true)
+    public PasswordChangedRequirement(bool isPasswordChangeRequired = true)
     {
         IsPasswordChangeRequired = isPasswordChangeRequired;
     }
