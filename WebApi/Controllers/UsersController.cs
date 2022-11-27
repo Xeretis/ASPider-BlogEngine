@@ -1,7 +1,7 @@
-using Application.Services.Types;
 using Auth.Authorization;
 using Auth.Authorization.Attributes;
 using AutoMapper;
+using Domain.Common;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,21 +18,21 @@ namespace WebApi.Controllers;
 public class UsersController : Controller
 {
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<ApiUser> _userManager;
-    private readonly IUsersService _usersService;
 
-    public UsersController(UserManager<ApiUser> userManager, IMapper mapper, IUsersService usersService)
+    public UsersController(UserManager<ApiUser> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _mapper = mapper;
-        _usersService = usersService;
+        _unitOfWork = unitOfWork;
     }
 
     [Authorize(Roles = ApiRoles.Webmaster)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UsersIndexResponseModel>>> Index()
     {
-        var usersWithRoles = await _usersService.GetUsersWithRolesAsync();
+        var usersWithRoles = await _unitOfWork.Users.GetUsersWithRolesAsync();
         var response = new List<UsersIndexResponseModel>(usersWithRoles.Keys.Count);
 
         foreach (var userWithRole in usersWithRoles)

@@ -1,9 +1,9 @@
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace Application.Services.Types;
+namespace Domain.Data.Repositories;
 
-public interface IUsersService
+public interface IUserRepository : IGenericRepository<ApiUser>
 {
     Task<Dictionary<ApiUser, List<IdentityRole>>> GetUsersWithRolesAsync();
 }

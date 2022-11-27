@@ -1,23 +1,23 @@
-using Application.Services.Types;
 using Domain.Data.Entities;
+using Domain.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Common;
 using Persistence.Contexts;
 
-namespace Application.Services.Implementations;
+namespace Persistence.Repositories;
 
-public class UsersService : IUsersService
+public class UserRepository : GenericRepository<ApiUser>, IUserRepository
 {
-    private readonly ApplicationDbContext _context;
-
-    public UsersService(ApplicationDbContext context)
+    public UserRepository(ApplicationDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<Dictionary<ApiUser, List<IdentityRole>>> GetUsersWithRolesAsync()
     {
-        var res = await _context.Users.SelectMany(
+        var res = await _context.Users
+            .Where(u => u.UserName != "ghost")
+            .SelectMany(
                 user => _context.UserRoles.Where(userRoleMapEntry => user.Id == userRoleMapEntry.UserId)
                     .DefaultIfEmpty(),
                 (user, roleMapEntry) => new { User = user, RoleMapEntry = roleMapEntry })

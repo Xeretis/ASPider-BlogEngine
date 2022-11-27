@@ -15,8 +15,10 @@ public class UnitOfWork : IUnitOfWork
         Posts = new PostRepository(_context);
         Pages = new PageRepository(_context);
         FileUploads = new FileUploadRepository(_context);
+        Users = new UserRepository(_context);
     }
 
+    public IUserRepository Users { get; }
     public IPageRepository Pages { get; }
     public IFileUploadRepository FileUploads { get; }
     public IPostRepository Posts { get; }
