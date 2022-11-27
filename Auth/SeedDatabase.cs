@@ -32,13 +32,8 @@ public static class SeedDatabase
             Id = "7959f218-73e9-4e68-8a0f-386575f3a5c6",
             Name = "Webmaster",
             Email = "webmaster@example.com",
-            NormalizedEmail = "WEBMASTER@EXAMPLE.COM",
             UserName = "webmaster1",
-            NormalizedUserName = "WEBMASTER1",
-            PhoneNumber = "+111111111111",
-            EmailConfirmed = true,
-            PhoneNumberConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString("D")
+            EmailConfirmed = true
         };
 
         if (await context.Users.FindAsync(user.Id) == null)
@@ -51,8 +46,7 @@ public static class SeedDatabase
             var userStore = new UserStore<ApiUser>(context);
             await userStore.CreateAsync(user);
 
-            var createdUser = await userManager.FindByNameAsync(user.UserName);
-            await userManager.AddToRoleAsync(createdUser, ApiRoles.Webmaster);
+            await userManager.AddToRoleAsync(user, ApiRoles.Webmaster);
         }
 
         var ghostUser = new ApiUser
@@ -60,13 +54,8 @@ public static class SeedDatabase
             Id = "e268f4f7-a55b-4cb6-ab63-7b3c63859a26",
             Name = "Deleted User",
             Email = "ghost@example.com",
-            NormalizedEmail = "GHOST@EXAMPLE.COM",
             UserName = "ghost",
-            NormalizedUserName = "GHOST",
-            PhoneNumber = "+111111111111",
-            EmailConfirmed = true,
-            PhoneNumberConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString("D")
+            EmailConfirmed = true
         };
 
         if (await context.Users.FindAsync(ghostUser.Id) == null)
@@ -79,7 +68,7 @@ public static class SeedDatabase
             var userStore = new UserStore<ApiUser>(context);
             await userStore.CreateAsync(ghostUser);
 
-            var createdGhostUser = await userManager.FindByNameAsync(ghostUser.UserName);
+            var createdGhostUser = await userManager.FindByIdAsync(ghostUser.Id);
             await userManager.SetLockoutEnabledAsync(createdGhostUser, true);
             await userManager.SetLockoutEndDateAsync(createdGhostUser, DateTimeOffset.MaxValue);
         }

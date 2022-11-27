@@ -68,12 +68,14 @@ public class AuthController : Controller
         var authClaims = await _authService.GetAuthClaims(user);
         var token = _authService.GetAuthToken(authClaims);
 
+        var userResponse = _mapper.Map<LoginResponseUserModel>(user);
+        userResponse.Roles = authClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
         return Ok(new LoginResponseModel
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             ExpiresAt = token.ValidTo,
-            User = _mapper.Map<LoginResponseUserModel>(user),
-            Roles = authClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
+            User = userResponse
         });
     }
 

@@ -44,4 +44,22 @@ public class UsersController : Controller
 
         return Ok(response);
     }
+
+    [Authorize(Roles = ApiRoles.Webmaster)]
+    [HttpPost("Create")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Create([FromBody] CreateUserRequestModel model)
+    {
+        var user = _mapper.Map<ApiUser>(model);
+        var createResult = await _userManager.CreateAsync(user, model.Password);
+
+        if (!createResult.Succeeded) return BadRequest(createResult.Errors);
+
+        var roleAddResult = await _userManager.AddToRoleAsync(user, model.Role);
+
+        if (!roleAddResult.Succeeded) return BadRequest(roleAddResult.Errors);
+
+        return NoContent();
+    }
 }
