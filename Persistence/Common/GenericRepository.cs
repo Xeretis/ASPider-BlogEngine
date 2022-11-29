@@ -1,14 +1,13 @@
 using System.Linq.Expressions;
 using Domain.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Contexts;
 
 namespace Persistence.Common;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     protected readonly ApplicationDbContext _context;
-    
+
     public GenericRepository(ApplicationDbContext context)
     {
         _context = context;
@@ -38,7 +37,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return _context.Set<T>().Where(expression);
     }
-    
+
     public void Add(T entity)
     {
         _context.Set<T>().Add(entity);

@@ -3,7 +3,7 @@ using Domain.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Contexts;
+using Persistence;
 
 namespace Auth;
 

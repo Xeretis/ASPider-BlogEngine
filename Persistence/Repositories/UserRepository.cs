@@ -3,7 +3,6 @@ using Domain.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Common;
-using Persistence.Contexts;
 
 namespace Persistence.Repositories;
 
@@ -24,6 +23,7 @@ public class UserRepository : GenericRepository<ApiUser>, IUserRepository
             .SelectMany(
                 x => _context.Roles.Where(role => role.Id == x.RoleMapEntry.RoleId).DefaultIfEmpty(),
                 (x, role) => new { x.User, Role = role })
+            .AsNoTracking()
             .ToListAsync();
 
         return res.Aggregate(

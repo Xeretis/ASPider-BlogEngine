@@ -1,6 +1,5 @@
 using Domain.Common;
 using Domain.Data.Repositories;
-using Persistence.Contexts;
 using Persistence.Repositories;
 
 namespace Persistence.Common;

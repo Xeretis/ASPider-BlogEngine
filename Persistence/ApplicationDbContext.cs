@@ -3,7 +3,7 @@ using Domain.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence.Contexts;
+namespace Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<ApiUser>
 {

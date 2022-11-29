@@ -2,7 +2,6 @@ using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Common;
-using Persistence.Contexts;
 
 namespace Persistence;
 
