@@ -7,7 +7,6 @@ public class UserResponseModel
     public string Name { get; set; }
     public string? ProfilePictureUrl { get; set; }
     public bool ChangePassword { get; set; }
-    public bool EmailConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
     public bool LockoutEnabled { get; set; }
 }
