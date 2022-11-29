@@ -105,7 +105,7 @@ public class UsersController : Controller
 
         if (user.Id == AuthConstants.DefaultWebmasterId && model.Role != ApiRoles.Webmaster)
         {
-            ModelState.AddModelError("role", "You cannot change the role of the default webmaster");
+            ModelState.AddModelError(nameof(model.Role), "You cannot change the role of the default webmaster");
             return ValidationProblem();
         }
 
