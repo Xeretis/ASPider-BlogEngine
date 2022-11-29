@@ -29,7 +29,7 @@ public static class SeedDatabase
         // --- Seed Users ---
         var user = new ApiUser
         {
-            Id = "7959f218-73e9-4e68-8a0f-386575f3a5c6",
+            Id = AuthConstants.DefaultWebmasterId,
             Name = "Webmaster",
             Email = "webmaster@example.com",
             UserName = "webmaster1",
@@ -51,7 +51,7 @@ public static class SeedDatabase
 
         var ghostUser = new ApiUser
         {
-            Id = "e268f4f7-a55b-4cb6-ab63-7b3c63859a26",
+            Id = AuthConstants.GhostUserId,
             Name = "Deleted User",
             Email = "ghost@example.com",
             UserName = "ghost",
