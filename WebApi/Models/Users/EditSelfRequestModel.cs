@@ -18,9 +18,5 @@ public class EditSelfRequestModel
 
     public string? NewPassword { get; set; }
 
-    [Required]
-    [RegularExpression("Webmaster|Moderator|Editor")]
-    public string Role { get; set; }
-
     [Url] public string? ProfilePictureUrl { get; set; }
 }

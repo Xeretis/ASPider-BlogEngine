@@ -75,7 +75,17 @@ public class UsersController : Controller
         var user = await _userManager.FindByIdAsync(id);
         if (user == null || user.Id == AuthConstants.GhostUserId) return NotFound();
 
-        if (user.Id == AuthConstants.DefaultWebmasterId) return BadRequest("Cannot delete default webmaster");
+        if (user.Id == User.FindFirstValue(AuthConstants.UserIdClaimType))
+        {
+            ModelState.AddModelError("id", "You cannot delete yourself");
+            return ValidationProblem();
+        }
+
+        if (user.Id == AuthConstants.DefaultWebmasterId)
+        {
+            ModelState.AddModelError("id", "You cannot delete the default webmaster");
+            return ValidationProblem();
+        }
 
         var deleteResult = await _userManager.DeleteAsync(user);
         if (!deleteResult.Succeeded) return BadRequest(deleteResult.Errors);
@@ -92,6 +102,12 @@ public class UsersController : Controller
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null || user.Id == AuthConstants.GhostUserId) return NotFound();
+
+        if (user.Id == AuthConstants.DefaultWebmasterId && model.Role != ApiRoles.Webmaster)
+        {
+            ModelState.AddModelError("role", "You cannot change the role of the default webmaster");
+            return ValidationProblem();
+        }
 
         _mapper.Map(model, user);
 
@@ -116,10 +132,13 @@ public class UsersController : Controller
     {
         var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType));
 
-        _mapper.Map(model, user);
-
         if (!await _userManager.CheckPasswordAsync(user, model.Password))
-            return BadRequest("Current password is incorrect");
+        {
+            ModelState.AddModelError(nameof(model.Password), "Incorrect password");
+            return ValidationProblem();
+        }
+
+        _mapper.Map(model, user);
 
         var updateResult = await _userManager.UpdateAsync(user);
 
