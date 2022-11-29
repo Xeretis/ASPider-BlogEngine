@@ -62,4 +62,20 @@ public class UsersController : Controller
 
         return NoContent();
     }
+
+    [Authorize(Roles = ApiRoles.Webmaster)]
+    [HttpDelete("Delete/{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete([FromRoute] string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        var deleteResult = await _userManager.DeleteAsync(user);
+        if (!deleteResult.Succeeded) return BadRequest(deleteResult.Errors);
+
+        return NoContent();
+    }
 }
