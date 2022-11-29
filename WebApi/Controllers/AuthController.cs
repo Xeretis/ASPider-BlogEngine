@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Auth;
 using Auth.Authorization.Attributes;
 using Auth.Services.Types;
 using AutoMapper;
@@ -83,7 +84,7 @@ public class AuthController : Controller
     [HttpGet("User")]
     public async Task<ActionResult<UserResponseModel>> GetUser()
     {
-        var user = await _userManager.FindByIdAsync(User.FindFirstValue(JwtRegisteredClaimNames.Sub));
+        var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType));
         return Ok(_mapper.Map<UserResponseModel>(user));
     }
 
@@ -103,7 +104,7 @@ public class AuthController : Controller
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
     {
-        var user = await _userManager.FindByIdAsync(User.FindFirstValue(JwtRegisteredClaimNames.Sub));
+        var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType));
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, model.Password);

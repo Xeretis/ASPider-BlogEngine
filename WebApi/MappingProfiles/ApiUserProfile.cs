@@ -15,5 +15,6 @@ public class ApiUserProfile : Profile
 
         CreateMap<CreateUserRequestModel, ApiUser>();
         CreateMap<EditUserRequestModel, ApiUser>();
+        CreateMap<EditSelfRequestModel, ApiUser>();
     }
 }

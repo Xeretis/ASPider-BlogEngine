@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Auth;
 using Auth.Authorization;
 using Auth.Authorization.Attributes;
@@ -69,7 +70,7 @@ public class UsersController : Controller
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete([FromRoute] string id)
+    public async Task<ActionResult> Delete([FromRoute] string id) //TODO: Make the ghost user function
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null || user.Id == AuthConstants.GhostUserId) return NotFound();
@@ -102,6 +103,32 @@ public class UsersController : Controller
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetResult = await _userManager.ResetPasswordAsync(user, token, model.Password);
+            if (!resetResult.Succeeded) return BadRequest(resetResult.Errors);
+        }
+
+        return NoContent();
+    }
+
+    [HttpPatch("Self")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> EditSelf([FromBody] EditSelfRequestModel model)
+    {
+        var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType));
+
+        _mapper.Map(model, user);
+
+        if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            return BadRequest("Current password is incorrect");
+
+        var updateResult = await _userManager.UpdateAsync(user);
+
+        if (!updateResult.Succeeded) return BadRequest(updateResult.Errors);
+
+        if (model.NewPassword != null)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetResult = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
             if (!resetResult.Succeeded) return BadRequest(resetResult.Errors);
         }
 

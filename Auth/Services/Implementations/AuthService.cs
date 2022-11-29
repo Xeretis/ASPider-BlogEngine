@@ -27,7 +27,7 @@ public class AuthService : IAuthService
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.UserName),
             new(ClaimTypes.NameIdentifier, user.UserName),
-            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(AuthConstants.UserIdClaimType, user.Id),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
         };
