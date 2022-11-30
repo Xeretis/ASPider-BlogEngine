@@ -1,4 +1,5 @@
 using Application.Services.Types;
+using Domain.Data.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
@@ -30,5 +31,20 @@ public class FileService : IFileService
         await image.CopyToAsync(new FileStream(filePath, FileMode.Create));
 
         return Path.Combine("Resources", "Images", uniqueFileName);
+    }
+
+    public async Task<FileUpload> UploadFileAsync(IFormFile file)
+    {
+        var uniqueFileName = GetUniqueFileName(file.FileName);
+        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Files");
+        var filePath = Path.Combine(uploads, uniqueFileName);
+        await file.CopyToAsync(new FileStream(filePath, FileMode.Create));
+
+        return new FileUpload
+        {
+            Filename = uniqueFileName,
+            OriginalFilename = file.FileName,
+            ContentType = file.ContentType
+        };
     }
 }
