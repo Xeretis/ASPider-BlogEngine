@@ -6,6 +6,7 @@ using Domain.Common;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models.Pages;
 using WebApi.Models.Users;
 
 namespace WebApi.Controllers;
@@ -26,6 +27,22 @@ public class PagesController : Controller
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _fileService = fileService;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ViewPageResponse>> View([FromRoute] int id)
+    {
+        var page = await _unitOfWork.Pages.GetByIdWithPostsFilesSubpagesAsync(id);
+
+        if (page == null || !page.Visible)
+            return NotFound();
+
+        var model = _mapper.Map<ViewPageResponse>(page);
+
+        return Ok(model);
     }
 
     [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]

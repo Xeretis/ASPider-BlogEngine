@@ -13,10 +13,12 @@ public class Page : BaseEntity
     public string? ThumbnailUrl { get; set; }
 
     public Page? Parent { get; set; }
-    public List<Page> Children { get; set; }
+    public int? ParentId { get; set; }
+    public List<Page>? Children { get; set; }
 
     public ApiUser? Creator { get; set; }
+    public string? CreatorId { get; set; }
 
-    public List<Post> Posts { get; set; }
-    public List<FileUpload> Files { get; set; }
+    public List<Post>? Posts { get; set; }
+    public List<FileUpload>? Files { get; set; }
 }

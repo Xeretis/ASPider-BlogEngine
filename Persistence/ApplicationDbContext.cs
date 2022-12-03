@@ -18,7 +18,8 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<ApiUser>().Property(u => u.ChangePassword).HasDefaultValue(true);
-        builder.Entity<Page>().Navigation(p => p.Files).AutoInclude();
+        //builder.Entity<Page>().Navigation(p => p.Files).AutoInclude();
+        //builder.Entity<Page>().Navigation(p => p.Posts).AutoInclude();
 
         builder.Entity<Page>().HasData(new Page
         {

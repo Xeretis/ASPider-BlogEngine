@@ -33,7 +33,7 @@ namespace Persistence.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     ProfilePictureUrl = table.Column<string>(type: "text", nullable: true),
-                    ChangePassword = table.Column<bool>(type: "boolean", nullable: false),
+                    ChangePassword = table.Column<bool>(type: "boolean", nullable: true, defaultValue: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -172,7 +172,7 @@ namespace Persistence.Migrations
                     Visible = table.Column<bool>(type: "boolean", nullable: false),
                     ThumbnailUrl = table.Column<string>(type: "text", nullable: true),
                     ParentId = table.Column<int>(type: "integer", nullable: true),
-                    CreatorId = table.Column<string>(type: "text", nullable: false),
+                    CreatorId = table.Column<string>(type: "text", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -183,8 +183,7 @@ namespace Persistence.Migrations
                         name: "FK_Pages_AspNetUsers_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Pages_Pages_ParentId",
                         column: x => x.ParentId,
@@ -254,6 +253,11 @@ namespace Persistence.Migrations
                         principalTable: "Posts",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "Pages",
+                columns: new[] { "Id", "Content", "CreatedDate", "CreatorId", "Description", "ModifiedDate", "ParentId", "ThumbnailUrl", "Title", "Visible" },
+                values: new object[] { 1, "Index content, only shown on the page itself", new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820), null, "Index description", new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820), null, null, "Index", true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

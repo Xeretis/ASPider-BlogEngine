@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Persistence;
 
 #nullable disable
 
@@ -29,7 +30,7 @@ namespace Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ChangePassword")
+                    b.Property<bool?>("ChangePassword")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
@@ -136,7 +137,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("FileUploads", (string)null);
+                    b.ToTable("FileUploads");
                 });
 
             modelBuilder.Entity("Domain.Data.Entities.Page", b =>
@@ -185,16 +186,16 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Pages", (string)null);
+                    b.ToTable("Pages");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             Content = "Index content, only shown on the page itself",
-                            CreatedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
+                            CreatedDate = new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820),
                             Description = "Index description",
-                            ModifiedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
+                            ModifiedDate = new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820),
                             Title = "Index",
                             Visible = true
                         });
@@ -250,7 +251,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("PageId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

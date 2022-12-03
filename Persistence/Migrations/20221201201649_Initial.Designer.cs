@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Persistence;
 
 #nullable disable
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221126100853_UpdatePages")]
-    partial class UpdatePages
+    [Migration("20221201201649_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +33,7 @@ namespace Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ChangePassword")
+                    b.Property<bool?>("ChangePassword")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
@@ -195,9 +196,9 @@ namespace Persistence.Migrations
                         {
                             Id = 1,
                             Content = "Index content, only shown on the page itself",
-                            CreatedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
+                            CreatedDate = new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820),
                             Description = "Index description",
-                            ModifiedDate = new DateTime(2022, 11, 26, 10, 8, 53, 722, DateTimeKind.Utc).AddTicks(570),
+                            ModifiedDate = new DateTime(2022, 12, 1, 20, 16, 49, 355, DateTimeKind.Utc).AddTicks(9820),
                             Title = "Index",
                             Visible = true
                         });
