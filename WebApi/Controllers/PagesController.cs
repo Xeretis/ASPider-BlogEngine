@@ -33,14 +33,14 @@ public class PagesController : Controller
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ViewPageResponse>> View([FromRoute] int id)
+    public async Task<ActionResult<ViewPageResponseModel>> View([FromRoute] int id)
     {
         var page = await _unitOfWork.Pages.GetByIdWithPostsFilesSubpagesAsync(id);
 
         if (page == null || !page.Visible)
             return NotFound();
 
-        var model = _mapper.Map<ViewPageResponse>(page);
+        var model = _mapper.Map<ViewPageResponseModel>(page);
 
         return Ok(model);
     }
@@ -61,7 +61,7 @@ public class PagesController : Controller
 
         var page = _mapper.Map<Page>(model);
         page.Files = new List<FileUpload>();
-        parentPage.Children.Add(page);
+        parentPage.Children!.Add(page);
 
         if (model.Files != null)
             foreach (var file in model.Files)

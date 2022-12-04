@@ -30,7 +30,7 @@ public class FileService : IFileService
         var filePath = Path.Combine(uploads, uniqueFileName);
         await image.CopyToAsync(new FileStream(filePath, FileMode.Create));
 
-        return Path.Combine("Resources", "Images", uniqueFileName);
+        return Path.Combine("Images", uniqueFileName);
     }
 
     public async Task<FileUpload> UploadFileAsync(IFormFile file)

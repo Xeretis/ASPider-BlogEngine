@@ -11,16 +11,16 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Produces("application/json")]
-public class ImageController : Controller
+public class ImagesController : Controller
 {
     private readonly IFileService _fileService;
 
-    public ImageController(IFileService fileService)
+    public ImagesController(IFileService fileService)
     {
         _fileService = fileService;
     }
 
-    [HttpPost("Upload")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]

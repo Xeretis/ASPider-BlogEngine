@@ -1,7 +1,9 @@
 using Domain.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Data.Entities;
 
+[Index(nameof(Filename), IsUnique = true)]
 public class FileUpload : BaseEntity
 {
     public string Filename { get; set; }
