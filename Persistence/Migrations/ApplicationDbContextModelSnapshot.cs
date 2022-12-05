@@ -140,7 +140,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("FileUploads");
+                    b.ToTable("FileUploads", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Data.Entities.Page", b =>
@@ -189,16 +189,16 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Pages");
+                    b.ToTable("Pages", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             Content = "Index content, only shown on the page itself",
-                            CreatedDate = new DateTime(2022, 12, 5, 17, 0, 11, 368, DateTimeKind.Utc).AddTicks(8720),
+                            CreatedDate = new DateTime(2022, 12, 4, 9, 55, 9, 42, DateTimeKind.Utc).AddTicks(7920),
                             Description = "Index description",
-                            ModifiedDate = new DateTime(2022, 12, 5, 17, 0, 11, 368, DateTimeKind.Utc).AddTicks(8720),
+                            ModifiedDate = new DateTime(2022, 12, 4, 9, 55, 9, 42, DateTimeKind.Utc).AddTicks(7920),
                             Title = "Index",
                             Visible = true
                         });
@@ -254,18 +254,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("PageId");
 
-                    b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("Domain.Data.Queries.DepthQuery", b =>
-                {
-                    b.Property<int>("Depth")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.ToTable("DepthQuery");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -402,17 +391,13 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Data.Entities.FileUpload", b =>
                 {
-                    b.HasOne("Domain.Data.Entities.Page", "Page")
+                    b.HasOne("Domain.Data.Entities.Page", null)
                         .WithMany("Files")
                         .HasForeignKey("PageId");
 
-                    b.HasOne("Domain.Data.Entities.Post", "Post")
+                    b.HasOne("Domain.Data.Entities.Post", null)
                         .WithMany("Files")
                         .HasForeignKey("PostId");
-
-                    b.Navigation("Page");
-
-                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Domain.Data.Entities.Page", b =>
