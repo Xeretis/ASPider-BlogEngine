@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Data.Entities;
+using Domain.Data.Queries;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,11 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     public DbSet<Page> Pages { get; set; }
     public DbSet<FileUpload> FileUploads { get; set; }
 
+    public DbSet<DepthQuery> DepthQuery { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<ApiUser>().Property(u => u.ChangePassword).HasDefaultValue(true);
-        //builder.Entity<Page>().Navigation(p => p.Files).AutoInclude();
-        //builder.Entity<Page>().Navigation(p => p.Posts).AutoInclude();
 
         builder.Entity<Page>().HasData(new Page
         {
@@ -28,6 +29,8 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
             Visible = true, CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         });
+
+        builder.Entity<DepthQuery>().HasNoKey();
 
         base.OnModelCreating(builder);
     }

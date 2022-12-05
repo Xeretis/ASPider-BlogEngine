@@ -24,4 +24,22 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
             .Include(p => p.Posts)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+
+    public async Task<int> GetDepthAsync(int id)
+    {
+        var res = await _context.DepthQuery.FromSql($@"
+            WITH RECURSIVE cte (Id, Depth)
+            AS
+            (
+                Select ""Id"", 0 as Depth From ""Pages"" where ""ParentId"" IS NULL
+                Union ALL
+                Select ""Pages"".""Id"", Depth + 1
+                From ""Pages""
+                inner join cte on ""Pages"".""ParentId"" = cte.Id
+                )
+            Select Id, Depth from cte
+            Where Id = {id}
+        ").ToListAsync();
+        return res.First().Depth;
+    }
 }
