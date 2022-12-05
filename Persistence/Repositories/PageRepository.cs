@@ -27,6 +27,7 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
 
     public async Task<int> GetDepthAsync(int id)
     {
+        //Could be optimized probably
         var res = await _context.DepthQuery.FromSql($@"
             WITH RECURSIVE cte (Id, Depth)
             AS
@@ -36,7 +37,7 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
                 Select ""Pages"".""Id"", Depth + 1
                 From ""Pages""
                 inner join cte on ""Pages"".""ParentId"" = cte.Id
-                )
+            )
             Select Id, Depth from cte
             Where Id = {id}
         ").ToListAsync();

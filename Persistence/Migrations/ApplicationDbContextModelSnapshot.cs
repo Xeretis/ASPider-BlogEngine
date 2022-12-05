@@ -196,9 +196,9 @@ namespace Persistence.Migrations
                         {
                             Id = 1,
                             Content = "Index content, only shown on the page itself",
-                            CreatedDate = new DateTime(2022, 12, 4, 9, 55, 9, 42, DateTimeKind.Utc).AddTicks(7920),
+                            CreatedDate = new DateTime(2022, 12, 5, 17, 0, 11, 368, DateTimeKind.Utc).AddTicks(8720),
                             Description = "Index description",
-                            ModifiedDate = new DateTime(2022, 12, 4, 9, 55, 9, 42, DateTimeKind.Utc).AddTicks(7920),
+                            ModifiedDate = new DateTime(2022, 12, 5, 17, 0, 11, 368, DateTimeKind.Utc).AddTicks(8720),
                             Title = "Index",
                             Visible = true
                         });
@@ -255,6 +255,17 @@ namespace Persistence.Migrations
                     b.HasIndex("PageId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("Domain.Data.Queries.DepthQuery", b =>
+                {
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.ToTable("DepthQuery");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -391,13 +402,17 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Data.Entities.FileUpload", b =>
                 {
-                    b.HasOne("Domain.Data.Entities.Page", null)
+                    b.HasOne("Domain.Data.Entities.Page", "Page")
                         .WithMany("Files")
                         .HasForeignKey("PageId");
 
-                    b.HasOne("Domain.Data.Entities.Post", null)
+                    b.HasOne("Domain.Data.Entities.Post", "Post")
                         .WithMany("Files")
                         .HasForeignKey("PostId");
+
+                    b.Navigation("Page");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Domain.Data.Entities.Page", b =>

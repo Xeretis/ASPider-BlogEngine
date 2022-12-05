@@ -15,4 +15,12 @@ public class FileUploadRepository : GenericRepository<FileUpload>, IFileUploadRe
     {
         return await _context.FileUploads.FirstOrDefaultAsync(f => f.Filename == filename);
     }
+
+    public async Task<FileUpload?> GetByIdWithPagePostAsync(int id)
+    {
+        return await _context.FileUploads
+            .Include(f => f.Page)
+            .Include(f => f.Post)
+            .FirstOrDefaultAsync(f => f.Id == id);
+    }
 }

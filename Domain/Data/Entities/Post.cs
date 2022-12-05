@@ -17,6 +17,7 @@ public class Post : BaseEntity
 
     [Required] public Page Page { get; set; }
     [Required] public ApiUser Author { get; set; }
+    public string AuthorId { get; set; }
 
     public List<FileUpload> Files { get; set; }
 }
