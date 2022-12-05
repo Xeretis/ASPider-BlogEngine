@@ -12,7 +12,7 @@ public class PageProfile : Profile
     {
         CreateMap<Page, ViewPageResponseModel>()
             .ForMember(r => r.SubPages, o => o.MapFrom<SubpageResolver>());
-
+        CreateMap<Page, IndexPageResponseModel>();
 
         CreateMap<CreatePageRequestModel, Page>()
             .ForMember(r => r.Files, opt => opt.Ignore());

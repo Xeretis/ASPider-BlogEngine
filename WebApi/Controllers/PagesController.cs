@@ -29,6 +29,15 @@ public class PagesController : Controller
         _fileService = fileService;
     }
 
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<IndexPageResponseModel>>> Index()
+    {
+        var pages = await _unitOfWork.Pages.GetAllWithFilesAsync();
+        var response = _mapper.Map<IEnumerable<IndexPageResponseModel>>(pages);
+        return Ok(response);
+    }
+
     [AllowAnonymous]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

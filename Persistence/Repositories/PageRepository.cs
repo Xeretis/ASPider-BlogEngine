@@ -42,4 +42,9 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
         ").ToListAsync();
         return res.First().Depth;
     }
+
+    public async Task<List<Page>> GetAllWithFilesAsync()
+    {
+        return await _context.Pages.Include(p => p.Files).ToListAsync();
+    }
 }
