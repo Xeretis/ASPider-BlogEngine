@@ -13,13 +13,26 @@ public class AllowedExtensionsAttribute : ValidationAttribute
 
     //Not the safest way to do this but will do
     protected override ValidationResult IsValid(
-        object value, ValidationContext validationContext)
+        object? value, ValidationContext validationContext)
     {
-        var file = value as IFormFile;
-        if (file != null)
+        switch (value)
         {
-            var extension = Path.GetExtension(file.FileName);
-            if (!_extensions.Contains(extension.ToLower())) return new ValidationResult(GetErrorMessage());
+            case IFormFile file:
+            {
+                var extension = Path.GetExtension(file.FileName);
+                if (!_extensions.Contains(extension.ToLower())) return new ValidationResult(GetErrorMessage());
+                break;
+            }
+            case IEnumerable<IFormFile> files:
+            {
+                foreach (var f in files)
+                {
+                    var extension = Path.GetExtension(f.FileName);
+                    if (!_extensions.Contains(extension.ToLower())) return new ValidationResult(GetErrorMessage());
+                }
+
+                break;
+            }
         }
 
         return ValidationResult.Success;
@@ -27,6 +40,6 @@ public class AllowedExtensionsAttribute : ValidationAttribute
 
     public string GetErrorMessage()
     {
-        return "This file extension is not allowed!";
+        return "This file extension is not allowed";
     }
 }

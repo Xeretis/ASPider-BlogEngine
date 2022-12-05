@@ -12,18 +12,26 @@ public class MaxFileSizeAttribute : ValidationAttribute
     }
 
     protected override ValidationResult IsValid(
-        object value, ValidationContext validationContext)
+        object? value, ValidationContext validationContext)
     {
-        var file = value as IFormFile;
-        if (file != null)
-            if (file.Length > _maxFileSize)
+        switch (value)
+        {
+            case IFormFile file when file.Length > _maxFileSize:
                 return new ValidationResult(GetErrorMessage());
+            case IEnumerable<IFormFile> files:
+            {
+                foreach (var f in files)
+                    if (f.Length > _maxFileSize)
+                        return new ValidationResult(GetErrorMessage());
+                break;
+            }
+        }
 
         return ValidationResult.Success;
     }
 
     public string GetErrorMessage()
     {
-        return $"Maximum allowed file size is {_maxFileSize} bytes.";
+        return $"Maximum allowed file size is {_maxFileSize} bytes";
     }
 }
