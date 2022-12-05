@@ -21,6 +21,10 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<ApiUser>().Property(u => u.ChangePassword).HasDefaultValue(true);
+        builder.Entity<Page>().HasMany(p => p.Children).WithOne(p => p.Parent).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Page>().HasMany(p => p.Files).WithOne(f => f.Page).OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Post>().HasMany(p => p.Files).WithOne(f => f.Post).OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Post>().HasOne(p => p.Page).WithMany(p => p.Posts).OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Page>().HasData(new Page
         {
@@ -30,7 +34,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
             ModifiedDate = DateTime.UtcNow
         });
 
-        builder.Entity<DepthQuery>().HasNoKey();
+        builder.Ignore<DepthQuery>();
 
         base.OnModelCreating(builder);
     }
