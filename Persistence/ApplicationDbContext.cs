@@ -35,7 +35,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
             ModifiedDate = DateTime.UtcNow
         });
 
-        builder.Ignore<DepthQuery>();
+        builder.Entity<DepthQuery>().HasNoKey().ToView(null);
 
         base.OnModelCreating(builder);
     }
