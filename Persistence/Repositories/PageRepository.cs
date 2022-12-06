@@ -11,17 +11,17 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
     {
     }
 
-    public async Task<Page?> GetByIdWithSubpagesAsync(int id)
+    public async Task<Page?> GetByIdWithChildrenAsync(int id)
     {
         return await _context.Pages.Include(p => p.Children).FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<Page?> GetByIdWithFilesSubpagesAsync(int id)
+    public async Task<Page?> GetByIdWithFilesChildrenAsync(int id)
     {
         return await _context.Pages.Include(p => p.Children).Include(p => p.Files).FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<Page?> GetByIdWithPostsFilesSubpagesAsync(int id)
+    public async Task<Page?> GetByIdWithPostsFilesChildrenAsync(int id)
     {
         return await _context.Pages
             .Include(p => p.Files)

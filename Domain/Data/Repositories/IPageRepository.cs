@@ -6,11 +6,11 @@ public interface IPageRepository : IGenericRepository<Page>
 {
     Task<List<Page>> GetAllWithFilesAsync();
 
-    Task<Page?> GetByIdWithSubpagesAsync(int id);
+    Task<Page?> GetByIdWithChildrenAsync(int id);
 
-    Task<Page?> GetByIdWithFilesSubpagesAsync(int id);
+    Task<Page?> GetByIdWithFilesChildrenAsync(int id);
 
-    Task<Page?> GetByIdWithPostsFilesSubpagesAsync(int id);
+    Task<Page?> GetByIdWithPostsFilesChildrenAsync(int id);
 
     Task<int> GetDepthAsync(int id);
 }

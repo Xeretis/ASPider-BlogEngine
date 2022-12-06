@@ -44,7 +44,7 @@ public class PagesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ViewPageResponseModel>> View([FromRoute] int id)
     {
-        var page = await _unitOfWork.Pages.GetByIdWithPostsFilesSubpagesAsync(id);
+        var page = await _unitOfWork.Pages.GetByIdWithPostsFilesChildrenAsync(id);
 
         if (page == null || !page.Visible)
             return NotFound();
@@ -60,7 +60,7 @@ public class PagesController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Create([FromForm] CreatePageRequestModel model)
     {
-        var parentPage = await _unitOfWork.Pages.GetByIdWithSubpagesAsync(model.ParentId);
+        var parentPage = await _unitOfWork.Pages.GetByIdWithChildrenAsync(model.ParentId);
 
         if (parentPage == null)
         {
@@ -94,7 +94,7 @@ public class PagesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete([FromRoute] int id)
     {
-        var page = await _unitOfWork.Pages.GetByIdWithFilesSubpagesAsync(id);
+        var page = await _unitOfWork.Pages.GetByIdWithFilesChildrenAsync(id);
 
         if (page == null)
             return NotFound();
