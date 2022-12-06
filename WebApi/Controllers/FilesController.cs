@@ -44,15 +44,11 @@ public class FilesController : Controller
             return NotFound();
 
         if (!HttpContext.User.IsInRole(ApiRoles.Webmaster) && !HttpContext.User.IsInRole(ApiRoles.Moderator))
-        {
-            if (file.Page != null &&
-                file.Page.CreatorId != HttpContext.User.FindFirst(AuthConstants.UserIdClaimType)!.Value)
+            if (file.Page != null || (file.Post != null &&
+                                      file.Post.AuthorId != HttpContext.User.FindFirst(AuthConstants.UserIdClaimType)!
+                                          .Value))
                 return Forbid();
-            if (file.Post != null &&
-                file.Post.AuthorId != HttpContext.User.FindFirst(AuthConstants.UserIdClaimType)!.Value)
-                return Forbid();
-        }
-        
+
         System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
 
         _unitOfWork.FileUploads.Remove(file);
