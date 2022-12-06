@@ -86,4 +86,36 @@ public class PagesController : Controller
 
         return NoContent();
     }
+
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete([FromRoute] int id)
+    {
+        var page = await _unitOfWork.Pages.GetByIdWithFilesSubpagesAsync(id);
+
+        if (page == null)
+            return NotFound();
+
+        if (page.Id == 1)
+        {
+            ModelState.AddModelError(nameof(id), "You cannot delete the root page");
+            return ValidationProblem();
+        }
+
+        if (page.Children!.Any())
+        {
+            ModelState.AddModelError(nameof(id), "Pages with children cannot be deleted");
+            return ValidationProblem();
+        }
+
+        foreach (var file in page.Files!) System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
+
+        _unitOfWork.Pages.Remove(page);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
 }
