@@ -47,6 +47,21 @@ public class UsersController : Controller
         return Ok(response);
     }
 
+    [AllowAnonymous]
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ViewUserResponseModel>> View([FromRoute] string id)
+    {
+        var user = await _unitOfWork.Users.GetByIdWithPostsAsync(id);
+
+        if (user == null) return NotFound();
+
+        var model = _mapper.Map<ViewUserResponseModel>(user);
+
+        return Ok(model);
+    }
+
     [Authorize(Roles = ApiRoles.Webmaster)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

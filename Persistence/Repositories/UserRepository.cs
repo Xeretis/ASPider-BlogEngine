@@ -37,4 +37,11 @@ public class UserRepository : GenericRepository<ApiUser>, IUserRepository
             },
             x => x);
     }
+
+    public async Task<ApiUser?> GetByIdWithPostsAsync(string id)
+    {
+        return await _context.Users
+            .Include(u => u.Posts.Where(p => p.Visible && p.Approved))
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
 }

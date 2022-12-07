@@ -12,6 +12,7 @@ public class ApiUserProfile : Profile
         CreateMap<ApiUser, LoginResponseUserModel>();
         CreateMap<ApiUser, UserResponseModel>();
         CreateMap<ApiUser, UsersIndexResponseModel>();
+        CreateMap<ApiUser, ViewUserResponseModel>();
 
         CreateMap<CreateUserRequestModel, ApiUser>();
         CreateMap<EditUserRequestModel, ApiUser>();
