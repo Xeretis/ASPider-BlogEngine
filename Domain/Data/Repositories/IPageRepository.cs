@@ -6,6 +6,8 @@ public interface IPageRepository : IGenericRepository<Page>
 {
     Task<List<Page>> GetAllWithFilesAsync();
 
+    Task<Page?> GetByIdWithFilesAsync(int id);
+
     Task<Page?> GetByIdWithChildrenAsync(int id);
 
     Task<Page?> GetByIdWithFilesChildrenAsync(int id);

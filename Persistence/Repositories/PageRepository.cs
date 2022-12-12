@@ -53,4 +53,11 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
     {
         return await _context.Pages.Include(p => p.Files).ToListAsync();
     }
+
+    public Task<Page?> GetByIdWithFilesAsync(int id)
+    {
+        return _context.Pages
+            .Include(x => x.Files)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
 }

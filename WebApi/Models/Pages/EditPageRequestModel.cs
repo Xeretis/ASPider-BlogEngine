@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using WebApi.Validation;
 
-namespace WebApi.Models.Users;
+namespace WebApi.Models.Pages;
 
-public class CreatePageRequestModel
+public class EditPageRequestModel
 {
     [Required] [MaxLength(256)] public string Title { get; set; }
     [Required] [MaxLength(256)] public string Description { get; set; }

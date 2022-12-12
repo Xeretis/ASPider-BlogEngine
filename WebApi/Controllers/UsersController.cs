@@ -51,7 +51,7 @@ public class UsersController : Controller
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ViewUserResponseModel>> View([FromRoute] string id)
+    public new async Task<ActionResult<ViewUserResponseModel>> View([FromRoute] string id)
     {
         var user = await _unitOfWork.Users.GetByIdWithPostsAsync(id);
 

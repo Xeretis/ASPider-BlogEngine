@@ -7,7 +7,6 @@ using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models.Pages;
-using WebApi.Models.Users;
 
 namespace WebApi.Controllers;
 
@@ -81,6 +80,51 @@ public class PagesController : Controller
         if (model.Files != null)
             foreach (var file in model.Files)
                 page.Files.Add(await _fileService.UploadFileAsync(file));
+
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Edit([FromRoute] int id, [FromForm] EditPageRequestModel model)
+    {
+        var page = await _unitOfWork.Pages.GetByIdWithFilesAsync(id);
+
+        if (page == null)
+            return NotFound();
+
+        if (page.ParentId != model.ParentId)
+        {
+            var parentPage = await _unitOfWork.Pages.GetByIdWithChildrenAsync(model.ParentId);
+
+            if (parentPage == null)
+            {
+                ModelState.AddModelError(nameof(model.ParentId), "Parent page not found");
+                return ValidationProblem();
+            }
+
+            if (await _unitOfWork.Pages.GetDepthAsync(model.ParentId) >= 4)
+            {
+                ModelState.AddModelError(nameof(model.ParentId), "Maximum page depth reached on parent");
+                return ValidationProblem();
+            }
+
+            parentPage.Children!.Add(page);
+        }
+
+        if (model.Files != null)
+            foreach (var file in model.Files)
+                page.Files!.Add(await _fileService.UploadFileAsync(file));
+
+        if (model.ThumbnailUrl != null)
+            page.ThumbnailUrl = model.ThumbnailUrl;
+
+        _mapper.Map(model, page);
 
         await _unitOfWork.CompleteAsync();
 
