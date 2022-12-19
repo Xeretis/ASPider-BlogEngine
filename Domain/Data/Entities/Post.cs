@@ -16,6 +16,7 @@ public class Post : BaseEntity
     public string? ThumbnailUrl { get; set; }
 
     [Required] public Page Page { get; set; }
+    public int PageId { get; set; }
     [Required] public ApiUser Author { get; set; }
     public string AuthorId { get; set; }
 
