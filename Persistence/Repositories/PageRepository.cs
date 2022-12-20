@@ -28,6 +28,7 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
             .Include(p => p.Children)
             .Include(p => p.Posts)!
             .ThenInclude(p => p.Author)
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -46,13 +47,13 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
             )
             Select Id, Depth from cte
             Where Id = {id}
-        ").ToListAsync();
+        ").AsNoTracking().ToListAsync();
         return res.First().Depth;
     }
 
     public async Task<List<Page>> GetAllWithCreatorFilesAsync()
     {
-        return await _context.Pages.Include(p => p.Creator).Include(p => p.Files).ToListAsync();
+        return await _context.Pages.Include(p => p.Creator).Include(p => p.Files).AsNoTracking().ToListAsync();
     }
 
     public Task<Page?> GetByIdWithFilesAsync(int id)

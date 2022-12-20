@@ -42,6 +42,7 @@ public class UserRepository : GenericRepository<ApiUser>, IUserRepository
     {
         return await _context.Users
             .Include(u => u.Posts.Where(p => p.Visible && p.Approved))
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 }

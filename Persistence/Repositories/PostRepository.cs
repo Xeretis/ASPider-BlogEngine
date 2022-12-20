@@ -13,11 +13,13 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
 
     public async Task<Post?> GetByIdWithAuthorFilesAsync(int id)
     {
-        return await _context.Posts.Include(p => p.Author).Include(p => p.Files).FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Posts.Include(p => p.Author).Include(p => p.Files).AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<List<Post>> GetAllWithPageAuthorFiles()
     {
-        return await _context.Posts.Include(p => p.Page).Include(p => p.Author).Include(p => p.Files).ToListAsync();
+        return await _context.Posts.Include(p => p.Page).Include(p => p.Author).Include(p => p.Files).AsNoTracking()
+            .ToListAsync();
     }
 }

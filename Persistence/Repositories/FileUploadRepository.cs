@@ -13,7 +13,7 @@ public class FileUploadRepository : GenericRepository<FileUpload>, IFileUploadRe
 
     public async Task<FileUpload?> GetByFilenameAsync(string filename)
     {
-        return await _context.FileUploads.FirstOrDefaultAsync(f => f.Filename == filename);
+        return await _context.FileUploads.AsNoTracking().FirstOrDefaultAsync(f => f.Filename == filename);
     }
 
     public async Task<FileUpload?> GetByIdWithPagePostAsync(int id)
