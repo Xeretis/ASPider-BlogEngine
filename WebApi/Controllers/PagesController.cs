@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Application.Services.Types;
+using Auth;
 using Auth.Authorization;
 using Auth.Authorization.Attributes;
 using AutoMapper;
@@ -32,7 +34,7 @@ public class PagesController : Controller
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IndexPageResponseModel>>> Index()
     {
-        var pages = await _unitOfWork.Pages.GetAllWithFilesAsync();
+        var pages = await _unitOfWork.Pages.GetAllWithCreatorFilesAsync();
         var response = _mapper.Map<IEnumerable<IndexPageResponseModel>>(pages);
         return Ok(response);
     }
@@ -75,6 +77,7 @@ public class PagesController : Controller
 
         var page = _mapper.Map<Page>(model);
         page.Files = new List<FileUpload>();
+        page.CreatorId = HttpContext.User.FindFirstValue(AuthConstants.UserIdClaimType);
         parentPage.Children!.Add(page);
 
         if (model.Files != null)

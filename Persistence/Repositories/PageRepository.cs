@@ -50,9 +50,9 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
         return res.First().Depth;
     }
 
-    public async Task<List<Page>> GetAllWithFilesAsync()
+    public async Task<List<Page>> GetAllWithCreatorFilesAsync()
     {
-        return await _context.Pages.Include(p => p.Files).ToListAsync();
+        return await _context.Pages.Include(p => p.Creator).Include(p => p.Files).ToListAsync();
     }
 
     public Task<Page?> GetByIdWithFilesAsync(int id)

@@ -4,7 +4,7 @@ namespace Domain.Data.Repositories;
 
 public interface IPageRepository : IGenericRepository<Page>
 {
-    Task<List<Page>> GetAllWithFilesAsync();
+    Task<List<Page>> GetAllWithCreatorFilesAsync();
 
     Task<Page?> GetByIdWithFilesAsync(int id);
 

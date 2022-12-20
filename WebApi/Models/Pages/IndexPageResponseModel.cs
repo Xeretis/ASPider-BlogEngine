@@ -13,7 +13,15 @@ public class IndexPageResponseModel
     public string? ThumbnailUrl { get; set; }
 
     public int? ParentId { get; set; }
-    public string? CreatorId { get; set; }
+    public IndexPageUserResponseModel? Creator { get; set; }
 
     public List<FileUploadResponseModel> Files { get; set; }
+}
+
+public class IndexPageUserResponseModel
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string UserName { get; set; }
+    public string? ProfilePictureUrl { get; set; }
 }
