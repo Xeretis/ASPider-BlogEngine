@@ -10,7 +10,8 @@ public class PageProfile : Profile
     public PageProfile()
     {
         CreateMap<Page, ViewPageResponseModel>()
-            .ForMember(r => r.SubPages, o => o.MapFrom<SubpageResolver>());
+            .ForMember(r => r.SubPages, o => o.MapFrom<SubpageResolver>())
+            .ForMember(r => r.Posts, o => o.MapFrom<PostResolver>());
         CreateMap<Page, IndexPageResponseModel>();
 
         CreateMap<CreatePageRequestModel, Page>()

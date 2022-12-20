@@ -26,7 +26,8 @@ public class PageRepository : GenericRepository<Page>, IPageRepository
         return await _context.Pages
             .Include(p => p.Files)
             .Include(p => p.Children)
-            .Include(p => p.Posts)
+            .Include(p => p.Posts)!
+            .ThenInclude(p => p.Author)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
