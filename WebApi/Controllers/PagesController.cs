@@ -77,7 +77,7 @@ public class PagesController : Controller
 
         var page = _mapper.Map<Page>(model);
         page.Files = new List<FileUpload>();
-        page.CreatorId = HttpContext.User.FindFirstValue(AuthConstants.UserIdClaimType);
+        page.CreatorId = User.FindFirstValue(AuthConstants.UserIdClaimType);
         parentPage.Children!.Add(page);
 
         if (model.Files != null)

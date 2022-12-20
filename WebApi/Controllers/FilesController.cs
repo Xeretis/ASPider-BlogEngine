@@ -43,9 +43,9 @@ public class FilesController : Controller
         if (file == null)
             return NotFound();
 
-        if (!HttpContext.User.IsInRole(ApiRoles.Webmaster) && !HttpContext.User.IsInRole(ApiRoles.Moderator))
+        if (!User.IsInRole(ApiRoles.Webmaster) && !User.IsInRole(ApiRoles.Moderator))
             if (file.Page != null || (file.Post != null &&
-                                      file.Post.AuthorId != HttpContext.User.FindFirst(AuthConstants.UserIdClaimType)!
+                                      file.Post.AuthorId != User.FindFirst(AuthConstants.UserIdClaimType)!
                                           .Value))
                 return Forbid();
 

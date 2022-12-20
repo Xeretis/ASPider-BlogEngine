@@ -145,7 +145,7 @@ public class UsersController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> EditSelf([FromBody] EditSelfRequestModel model)
     {
-        var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType));
+        var user = await _userManager.FindByIdAsync(User.FindFirstValue(AuthConstants.UserIdClaimType)!);
 
         if (!await _userManager.CheckPasswordAsync(user, model.Password))
         {
