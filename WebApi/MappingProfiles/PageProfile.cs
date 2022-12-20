@@ -2,6 +2,7 @@ using AutoMapper;
 using Domain.Data.Entities;
 using WebApi.MappingProfiles.Resolvers;
 using WebApi.Models.Pages;
+using WebApi.Models.Posts;
 
 namespace WebApi.MappingProfiles;
 
@@ -13,6 +14,7 @@ public class PageProfile : Profile
             .ForMember(r => r.SubPages, o => o.MapFrom<SubpageResolver>())
             .ForMember(r => r.Posts, o => o.MapFrom<PostResolver>());
         CreateMap<Page, IndexPageResponseModel>();
+        CreateMap<Page, IndexPostPageResponseModel>();
 
         CreateMap<CreatePageRequestModel, Page>()
             .ForMember(r => r.Files, opt => opt.Ignore());

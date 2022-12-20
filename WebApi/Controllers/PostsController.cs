@@ -1,3 +1,4 @@
+using Auth.Authorization;
 using Auth.Authorization.Attributes;
 using AutoMapper;
 using Domain.Common;
@@ -23,13 +24,22 @@ public class PostsController : Controller
         _unitOfWork = unitOfWork;
     }
 
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<IndexPostResponseModel>>> Index()
+    {
+        var posts = await _unitOfWork.Posts.GetAllWithPageAuthorFiles();
+        var response = _mapper.Map<IEnumerable<IndexPostResponseModel>>(posts);
+        return Ok(response);
+    }
+
     [AllowAnonymous]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ViewPostResponseModel>> View([FromRoute] int id)
     {
-        var post = await _unitOfWork.Posts.GetByIdWithFilesAsync(id);
+        var post = await _unitOfWork.Posts.GetByIdWithAuthorFilesAsync(id);
 
         if (post == null || !post.Visible || !post.Approved)
             return NotFound();

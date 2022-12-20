@@ -8,12 +8,18 @@ public class ViewPostResponseModel
     public string Description { get; set; }
     public string Content { get; set; }
 
-    public bool Visible { get; set; }
-    public bool Approved { get; set; }
     public string? ThumbnailUrl { get; set; }
 
     public int PageId { get; set; }
-    public string AuthorId { get; set; }
+    public ViewPostUserResponseModel Author { get; set; }
 
     public List<FileUploadResponseModel> Files { get; set; }
+}
+
+public class ViewPostUserResponseModel
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string UserName { get; set; }
+    public string? ProfilePictureUrl { get; set; }
 }

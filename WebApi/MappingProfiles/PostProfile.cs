@@ -13,5 +13,6 @@ public class PostProfile : Profile
         CreateMap<Post, ViewUserPostResponseModel>();
         CreateMap<Post, ViewPagePostResponseModel>();
         CreateMap<Post, ViewPostResponseModel>();
+        CreateMap<Post, IndexPostResponseModel>();
     }
 }

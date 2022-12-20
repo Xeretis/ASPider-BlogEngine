@@ -2,6 +2,7 @@ using AutoMapper;
 using Domain.Data.Entities;
 using WebApi.Models.Auth;
 using WebApi.Models.Pages;
+using WebApi.Models.Posts;
 using WebApi.Models.Users;
 
 namespace WebApi.MappingProfiles;
@@ -16,6 +17,8 @@ public class ApiUserProfile : Profile
         CreateMap<ApiUser, ViewUserResponseModel>();
         CreateMap<ApiUser, ViewPageUserResponseModel>();
         CreateMap<ApiUser, IndexPageUserResponseModel>();
+        CreateMap<ApiUser, ViewPostUserResponseModel>();
+        CreateMap<ApiUser, IndexPostUserResponseModel>();
 
         CreateMap<CreateUserRequestModel, ApiUser>();
         CreateMap<EditUserRequestModel, ApiUser>();
