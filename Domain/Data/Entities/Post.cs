@@ -15,10 +15,10 @@ public class Post : BaseEntity
     public bool Approved { get; set; }
     public string? ThumbnailUrl { get; set; }
 
-    [Required] public Page Page { get; set; }
+    [Required] public Page? Page { get; set; }
     public int PageId { get; set; }
-    [Required] public ApiUser Author { get; set; }
+    [Required] public ApiUser? Author { get; set; }
     public string AuthorId { get; set; }
 
-    public List<FileUpload> Files { get; set; }
+    public List<FileUpload>? Files { get; set; }
 }

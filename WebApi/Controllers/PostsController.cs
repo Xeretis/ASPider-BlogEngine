@@ -91,4 +91,24 @@ public class PostsController : Controller
 
         return NoContent();
     }
+
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete([FromRoute] int id)
+    {
+        var post = await _unitOfWork.Posts.GetByIdWithFilesAsync(id);
+
+        if (post == null)
+            return NotFound();
+
+        foreach (var file in post.Files!) System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
+
+        _unitOfWork.Posts.Remove(post);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
 }
