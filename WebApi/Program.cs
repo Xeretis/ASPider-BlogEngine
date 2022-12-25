@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Application;
 using Auth;
+using Ganss.Xss;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Persistence;
@@ -48,6 +49,7 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 var app = builder.Build();
 

@@ -1,7 +1,12 @@
+using System.Security.Claims;
+using Application.Services.Types;
+using Auth;
 using Auth.Authorization;
 using Auth.Authorization.Attributes;
 using AutoMapper;
 using Domain.Common;
+using Domain.Data.Entities;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models.Posts;
@@ -15,13 +20,18 @@ namespace WebApi.Controllers;
 [Produces("application/json")]
 public class PostsController : Controller
 {
+    private readonly IFileService _fileService;
+    private readonly HtmlSanitizer _htmlSanitizer;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PostsController(IMapper mapper, IUnitOfWork unitOfWork)
+    public PostsController(IMapper mapper, IUnitOfWork unitOfWork, IFileService fileService,
+        HtmlSanitizer htmlSanitizer)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _fileService = fileService;
+        _htmlSanitizer = htmlSanitizer;
     }
 
     [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
@@ -47,5 +57,38 @@ public class PostsController : Controller
         var model = _mapper.Map<ViewPostResponseModel>(post);
 
         return Ok(model);
+    }
+
+    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Create([FromForm] CreatePostRequestModel model)
+    {
+        var parentPage = await _unitOfWork.Pages.GetByIdWithChildrenAsync(model.PageId);
+
+        if (parentPage == null)
+        {
+            ModelState.AddModelError(nameof(model.PageId), "Page not found");
+            return ValidationProblem();
+        }
+
+        var post = _mapper.Map<Post>(model);
+        post.Files = new List<FileUpload>();
+        post.AuthorId = User.FindFirstValue(AuthConstants.UserIdClaimType)!;
+
+        post.Content = _htmlSanitizer.Sanitize(model.Content);
+
+        if (User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator))
+            post.Approved = true;
+
+        if (model.Files != null)
+            foreach (var file in model.Files)
+                post.Files.Add(await _fileService.UploadFileAsync(file));
+
+        _unitOfWork.Add(post);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
     }
 }

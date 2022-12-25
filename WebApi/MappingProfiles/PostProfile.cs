@@ -14,5 +14,8 @@ public class PostProfile : Profile
         CreateMap<Post, ViewPagePostResponseModel>();
         CreateMap<Post, ViewPostResponseModel>();
         CreateMap<Post, IndexPostResponseModel>();
+
+        CreateMap<CreatePostRequestModel, Post>()
+            .ForMember(r => r.Files, opt => opt.Ignore());
     }
 }

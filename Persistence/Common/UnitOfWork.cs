@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Data.Repositories;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Persistence.Repositories;
 
 namespace Persistence.Common;
@@ -21,6 +22,11 @@ public class UnitOfWork : IUnitOfWork
     public IPageRepository Pages { get; }
     public IFileUploadRepository FileUploads { get; }
     public IPostRepository Posts { get; }
+
+    public EntityEntry<T> Add<T>(T entity) where T : class
+    {
+        return _context.Add(entity);
+    }
 
     public int Complete()
     {
