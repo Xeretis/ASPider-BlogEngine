@@ -34,11 +34,16 @@ public class PostsController : Controller
         _htmlSanitizer = htmlSanitizer;
     }
 
-    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IndexPostResponseModel>>> Index()
     {
-        var posts = await _unitOfWork.Posts.GetAllWithPageAuthorFiles();
+        List<Post> posts;
+        if (User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator))
+            posts = await _unitOfWork.Posts.GetAllWithPageAuthorFiles();
+        else
+            posts = await _unitOfWork.Posts.GetFromUserWithPageAuthorFiles(
+                User.FindFirstValue(AuthConstants.UserIdClaimType)!);
+
         var response = _mapper.Map<IEnumerable<IndexPostResponseModel>>(posts);
         return Ok(response);
     }
@@ -59,7 +64,6 @@ public class PostsController : Controller
         return Ok(model);
     }
 
-    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,7 +96,6 @@ public class PostsController : Controller
         return NoContent();
     }
 
-    [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -103,6 +106,10 @@ public class PostsController : Controller
 
         if (post == null)
             return NotFound();
+
+        if (!(User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator)) &&
+            post.AuthorId != User.FindFirstValue(AuthConstants.UserIdClaimType))
+            return Forbid();
 
         foreach (var file in post.Files!) System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
 

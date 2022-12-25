@@ -27,4 +27,12 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
         return await _context.Posts.Include(p => p.Page).Include(p => p.Author).Include(p => p.Files).AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<List<Post>> GetFromUserWithPageAuthorFiles(string userId)
+    {
+        return await _context.Posts.Where(p => p.AuthorId == userId).Include(p => p.Page).Include(p => p.Author)
+            .Include(p => p.Files)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }
