@@ -107,9 +107,11 @@ public class PostsController : Controller
         if (post == null)
             return NotFound();
 
-        if (!(User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator)) &&
-            post.AuthorId != User.FindFirstValue(AuthConstants.UserIdClaimType))
-            return Forbid();
+        var userAuthorized = User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator) ||
+                             post.AuthorId == User.FindFirstValue(AuthConstants.UserIdClaimType);
+
+        if (!userAuthorized)
+            return post is { Visible: true, Approved: true } ? Forbid() : NotFound();
 
         foreach (var file in post.Files!) System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
 
