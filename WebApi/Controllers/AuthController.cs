@@ -134,6 +134,9 @@ public class AuthController : Controller
         };
         Response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
 
+        _unitOfWork.RefreshTokens.Remove(refreshToken);
+        await _unitOfWork.CompleteAsync();
+
         return Ok(new LoginResponseModel
         {
             Token = new JwtSecurityTokenHandler().WriteToken(authToken),
