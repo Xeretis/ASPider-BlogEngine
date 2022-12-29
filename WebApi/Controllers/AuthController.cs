@@ -75,6 +75,7 @@ public class AuthController : Controller
         return Ok(new LoginResponseModel
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
+            RefreshToken = model.Remember ? await _authService.GetRefreshTokenAsync(user.Id) : null,
             ExpiresAt = token.ValidTo,
             User = userResponse
         });

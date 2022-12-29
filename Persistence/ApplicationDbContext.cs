@@ -15,6 +15,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     public DbSet<Post> Posts { get; set; }
     public DbSet<Page> Pages { get; set; }
     public DbSet<FileUpload> FileUploads { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public DbSet<DepthQuery> DepthQuery { get; set; }
 

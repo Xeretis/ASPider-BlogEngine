@@ -16,12 +16,14 @@ public class UnitOfWork : IUnitOfWork
         Pages = new PageRepository(_context);
         FileUploads = new FileUploadRepository(_context);
         Users = new UserRepository(_context);
+        RefreshTokens = new RefreshTokenRepository(_context);
     }
 
     public IUserRepository Users { get; }
     public IPageRepository Pages { get; }
     public IFileUploadRepository FileUploads { get; }
     public IPostRepository Posts { get; }
+    public IRefreshTokenRepository RefreshTokens { get; }
 
     public EntityEntry<T> Add<T>(T entity) where T : class
     {

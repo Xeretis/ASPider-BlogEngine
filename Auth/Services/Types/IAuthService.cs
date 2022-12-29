@@ -8,4 +8,5 @@ public interface IAuthService
 {
     Task<List<Claim>> GetAuthClaims(ApiUser user);
     JwtSecurityToken GetAuthToken(List<Claim> authClaims);
+    Task<string> GetRefreshTokenAsync(string userId);
 }

@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Auth.Services.Types;
+using Domain.Common;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +14,14 @@ namespace Auth.Services.Implementations;
 public class AuthService : IAuthService
 {
     private readonly IConfiguration _configuration;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<ApiUser> _userManager;
 
-    public AuthService(UserManager<ApiUser> userManager, IConfiguration configuration)
+    public AuthService(UserManager<ApiUser> userManager, IConfiguration configuration, IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<List<Claim>> GetAuthClaims(ApiUser user)
@@ -43,11 +47,26 @@ public class AuthService : IAuthService
     {
         var token = new JwtSecurityToken(
             _configuration["JWT:ValidIssuer"],
-            null,
-            expires: DateTime.Now.AddHours(3),
+            expires: DateTime.Now.AddHours(AuthConstants.AuthTokenExpirationHours),
             claims: authClaims,
             signingCredentials: CreateSigningCredentials()
         );
+
+        return token;
+    }
+
+    public async Task<string> GetRefreshTokenAsync(string userId)
+    {
+        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+        var refreshToken = new RefreshToken
+        {
+            Token = token,
+            UserId = userId
+        };
+
+        _unitOfWork.Add(refreshToken);
+        await _unitOfWork.CompleteAsync();
 
         return token;
     }

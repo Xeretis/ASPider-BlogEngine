@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable
     IPostRepository Posts { get; }
     IPageRepository Pages { get; }
     IFileUploadRepository FileUploads { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
 
     EntityEntry<T> Add<T>(T entity) where T : class;
 
