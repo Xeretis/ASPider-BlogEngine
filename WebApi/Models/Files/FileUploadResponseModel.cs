@@ -1,6 +1,8 @@
+using Domain.Data;
+
 namespace WebApi.Models.Files;
 
-public class FileUploadResponseModel
+public class FileUploadResponseModel : IFileModel
 {
     public int Id { get; set; }
     public string Filename { get; set; }

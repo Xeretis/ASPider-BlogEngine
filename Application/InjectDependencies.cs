@@ -10,6 +10,7 @@ public static class InjectDependencies
     {
         services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<IPostService, PostService>();
+        services.AddSingleton<IConfigService, ConfigService>();
 
         return services;
     }

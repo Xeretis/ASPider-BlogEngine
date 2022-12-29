@@ -49,6 +49,10 @@ public class FilesController : Controller
                                           .Value))
                 return Forbid();
 
+        // If it belongs to the config
+        if (file.Page == null && file.Post == null && !User.IsInRole(ApiRoles.Webmaster))
+            return Forbid();
+
         System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
 
         _unitOfWork.FileUploads.Remove(file);
