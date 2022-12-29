@@ -4,6 +4,7 @@ using Auth;
 using Auth.Authorization.Attributes;
 using Auth.Services.Types;
 using AutoMapper;
+using Domain.Common;
 using Domain.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,16 +24,19 @@ public class AuthController : Controller
     private readonly IMemoryCache _cache;
     private readonly IMapper _mapper;
     private readonly SignInManager<ApiUser> _signInManager;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<ApiUser> _userManager;
 
     public AuthController(UserManager<ApiUser> userManager,
-        SignInManager<ApiUser> signInManager, IAuthService authService, IMapper mapper, IMemoryCache cache)
+        SignInManager<ApiUser> signInManager, IAuthService authService, IMapper mapper, IMemoryCache cache,
+        IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _mapper = mapper;
         _cache = cache;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpPost("Login")]
@@ -72,11 +76,68 @@ public class AuthController : Controller
         var userResponse = _mapper.Map<LoginResponseUserModel>(user);
         userResponse.Roles = authClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
+        if (model.Remember)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(AuthConstants.RefreshTokenExpirationDays),
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = true
+            };
+            Response.Cookies.Append("refreshToken", await _authService.GetRefreshTokenAsync(user.Id),
+                cookieOptions);
+        }
+
         return Ok(new LoginResponseModel
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
-            RefreshToken = model.Remember ? await _authService.GetRefreshTokenAsync(user.Id) : null,
             ExpiresAt = token.ValidTo,
+            User = userResponse
+        });
+    }
+
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<LoginResponseModel>> Refresh()
+    {
+        var token = Request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(token))
+        {
+            ModelState.AddModelError("refreshToken", "Refresh token is missing");
+            return ValidationProblem();
+        }
+
+        var refreshToken = await _unitOfWork.RefreshTokens.GetByTokenWithUserAsync(token);
+        if (refreshToken == null ||
+            refreshToken.CreatedDate.AddDays(AuthConstants.RefreshTokenExpirationDays) < DateTime.Now)
+        {
+            ModelState.AddModelError("refreshToken", "Refresh token is invalid");
+            return ValidationProblem();
+        }
+
+        var newRefreshToken = await _authService.GetRefreshTokenAsync(refreshToken.User!.Id);
+
+        var authClaims = await _authService.GetAuthClaims(refreshToken.User);
+        var authToken = _authService.GetAuthToken(authClaims);
+
+        var userResponse = _mapper.Map<LoginResponseUserModel>(refreshToken.User);
+        userResponse.Roles = authClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+        var cookieOptions = new CookieOptions
+        {
+            Expires = DateTime.Now.AddDays(AuthConstants.RefreshTokenExpirationDays),
+            HttpOnly = true,
+            IsEssential = true,
+            Secure = true
+        };
+        Response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
+
+        return Ok(new LoginResponseModel
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(authToken),
+            ExpiresAt = authToken.ValidTo,
             User = userResponse
         });
     }
