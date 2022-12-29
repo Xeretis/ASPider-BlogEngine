@@ -17,5 +17,8 @@ public class PostProfile : Profile
 
         CreateMap<CreatePostRequestModel, Post>()
             .ForMember(r => r.Files, opt => opt.Ignore());
+        CreateMap<EditPostRequestModel, Post>()
+            .ForMember(r => r.Files, opt => opt.Ignore())
+            .ForMember(r => r.ThumbnailUrl, opt => opt.Ignore());
     }
 }

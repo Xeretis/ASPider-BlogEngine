@@ -23,15 +23,17 @@ public class PostsController : Controller
     private readonly IFileService _fileService;
     private readonly HtmlSanitizer _htmlSanitizer;
     private readonly IMapper _mapper;
+    private readonly IPostService _postService;
     private readonly IUnitOfWork _unitOfWork;
 
     public PostsController(IMapper mapper, IUnitOfWork unitOfWork, IFileService fileService,
-        HtmlSanitizer htmlSanitizer)
+        HtmlSanitizer htmlSanitizer, IPostService postService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _fileService = fileService;
         _htmlSanitizer = htmlSanitizer;
+        _postService = postService;
     }
 
     [HttpGet]
@@ -83,14 +85,60 @@ public class PostsController : Controller
 
         post.Content = _htmlSanitizer.Sanitize(model.Content);
 
-        if (User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator))
-            post.Approved = true;
+        post.Approved = User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator);
 
         if (model.Files != null)
             foreach (var file in model.Files)
                 post.Files.Add(await _fileService.UploadFileAsync(file));
 
         _unitOfWork.Add(post);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Edit([FromRoute] int id, [FromForm] EditPostRequestModel model)
+    {
+        var post = await _unitOfWork.Posts.GetByIdWithFilesAsync(id);
+
+        if (post == null)
+            return NotFound();
+
+        if (!_postService.IsModifyAllowed(User, post))
+            return post is { Visible: true, Approved: true } ? Forbid() : NotFound();
+
+        if (post.PageId != model.PageId)
+        {
+            var page = await _unitOfWork.Pages.GetByIdWithPostsAsync(model.PageId);
+
+            if (page == null)
+            {
+                ModelState.AddModelError(nameof(model.PageId), "Page not found");
+                return ValidationProblem();
+            }
+
+            page.Posts!.Add(post);
+        }
+
+        if (model.Files != null)
+            foreach (var file in model.Files)
+                post.Files!.Add(await _fileService.UploadFileAsync(file));
+
+        if (_postService.IsContentModified(model, post) || model.Files != null)
+            post.Approved = User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator);
+
+        if (model.ThumbnailUrl != null)
+            post.ThumbnailUrl = model.ThumbnailUrl;
+
+        _mapper.Map(model, post);
+
+        post.Content = _htmlSanitizer.Sanitize(model.Content);
+
         await _unitOfWork.CompleteAsync();
 
         return NoContent();
@@ -107,10 +155,7 @@ public class PostsController : Controller
         if (post == null)
             return NotFound();
 
-        var userAuthorized = User.IsInRole(ApiRoles.Webmaster) || User.IsInRole(ApiRoles.Moderator) ||
-                             post.AuthorId == User.FindFirstValue(AuthConstants.UserIdClaimType);
-
-        if (!userAuthorized)
+        if (!_postService.IsModifyAllowed(User, post))
             return post is { Visible: true, Approved: true } ? Forbid() : NotFound();
 
         foreach (var file in post.Files!) System.IO.File.Delete(Path.Combine("Resources", "Files", file.Filename));
