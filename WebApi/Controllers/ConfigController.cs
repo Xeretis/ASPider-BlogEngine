@@ -34,6 +34,7 @@ public class ConfigController : Controller
         _unitOfWork = unitOfWork;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult> Get()
     {
