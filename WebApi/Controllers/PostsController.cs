@@ -61,9 +61,8 @@ public class PostsController : Controller
         if (post == null || !post.Visible || !post.Approved)
             return NotFound();
 
-        var model = _mapper.Map<ViewPostResponseModel>(post);
-
-        return Ok(model);
+        var response = _mapper.Map<ViewPostResponseModel>(post);
+        return Ok(response);
     }
 
     [HttpPost]

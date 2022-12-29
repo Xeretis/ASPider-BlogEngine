@@ -50,9 +50,8 @@ public class PagesController : Controller
         if (page == null || !page.Visible)
             return NotFound();
 
-        var model = _mapper.Map<ViewPageResponseModel>(page);
-
-        return Ok(model);
+        var response = _mapper.Map<ViewPageResponseModel>(page);
+        return Ok(response);
     }
 
     [Authorize(Roles = $"{ApiRoles.Webmaster},{ApiRoles.Moderator}")]

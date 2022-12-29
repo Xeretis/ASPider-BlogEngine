@@ -8,4 +8,5 @@ public interface IPostRepository : IGenericRepository<Post>
     Task<Post?> GetByIdWithAuthorFilesAsync(int id);
     Task<List<Post>> GetAllWithPageAuthorFiles();
     Task<List<Post>> GetFromUserWithPageAuthorFiles(string userId);
+    Task<List<Post>> GetUnapprovedWithPageAuthorFiles();
 }

@@ -35,4 +35,12 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<List<Post>> GetUnapprovedWithPageAuthorFiles()
+    {
+        return await _context.Posts.Where(p => !p.Approved).Include(p => p.Page).Include(p => p.Author)
+            .Include(p => p.Files)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }
